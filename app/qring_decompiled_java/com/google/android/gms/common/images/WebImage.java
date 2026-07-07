@@ -1,0 +1,112 @@
+package com.google.android.gms.common.images;
+
+/* compiled from: com.google.android.gms:play-services-base@@18.0.1 */
+/* loaded from: /tmp/dex/classes2.dex */
+public final class WebImage extends com.google.android.gms.common.internal.safeparcel.AbstractSafeParcelable {
+    public static final android.os.Parcelable.Creator<com.google.android.gms.common.images.WebImage> CREATOR = new com.google.android.gms.common.images.zah();
+    final int zaa;
+    private final android.net.Uri zab;
+    private final int zac;
+    private final int zad;
+
+    WebImage(int i, android.net.Uri uri, int i2, int i3) {
+        this.zaa = i;
+        this.zab = uri;
+        this.zac = i2;
+        this.zad = i3;
+    }
+
+    public boolean equals(java.lang.Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj != null && (obj instanceof com.google.android.gms.common.images.WebImage)) {
+            com.google.android.gms.common.images.WebImage webImage = (com.google.android.gms.common.images.WebImage) obj;
+            if (com.google.android.gms.common.internal.Objects.equal(this.zab, webImage.zab) && this.zac == webImage.zac && this.zad == webImage.zad) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getHeight() {
+        return this.zad;
+    }
+
+    public android.net.Uri getUrl() {
+        return this.zab;
+    }
+
+    public int getWidth() {
+        return this.zac;
+    }
+
+    public int hashCode() {
+        return com.google.android.gms.common.internal.Objects.hashCode(this.zab, java.lang.Integer.valueOf(this.zac), java.lang.Integer.valueOf(this.zad));
+    }
+
+    public org.json.JSONObject toJson() {
+        org.json.JSONObject jSONObject = new org.json.JSONObject();
+        try {
+            jSONObject.put("url", this.zab.toString());
+            jSONObject.put("width", this.zac);
+            jSONObject.put("height", this.zad);
+        } catch (org.json.JSONException unused) {
+        }
+        return jSONObject;
+    }
+
+    public java.lang.String toString() {
+        return java.lang.String.format(java.util.Locale.US, "Image %dx%d %s", java.lang.Integer.valueOf(this.zac), java.lang.Integer.valueOf(this.zad), this.zab.toString());
+    }
+
+    @Override // android.os.Parcelable
+    public void writeToParcel(android.os.Parcel parcel, int i) {
+        int beginObjectHeader = com.google.android.gms.common.internal.safeparcel.SafeParcelWriter.beginObjectHeader(parcel);
+        com.google.android.gms.common.internal.safeparcel.SafeParcelWriter.writeInt(parcel, 1, this.zaa);
+        com.google.android.gms.common.internal.safeparcel.SafeParcelWriter.writeParcelable(parcel, 2, getUrl(), i, false);
+        com.google.android.gms.common.internal.safeparcel.SafeParcelWriter.writeInt(parcel, 3, getWidth());
+        com.google.android.gms.common.internal.safeparcel.SafeParcelWriter.writeInt(parcel, 4, getHeight());
+        com.google.android.gms.common.internal.safeparcel.SafeParcelWriter.finishObjectHeader(parcel, beginObjectHeader);
+    }
+
+    public WebImage(android.net.Uri uri) throws java.lang.IllegalArgumentException {
+        this(uri, 0, 0);
+    }
+
+    public WebImage(android.net.Uri uri, int i, int i2) throws java.lang.IllegalArgumentException {
+        this(1, uri, i, i2);
+        if (uri == null) {
+            throw new java.lang.IllegalArgumentException("url cannot be null");
+        }
+        if (i < 0 || i2 < 0) {
+            throw new java.lang.IllegalArgumentException("width and height must not be negative");
+        }
+    }
+
+    /* JADX WARN: Illegal instructions before constructor call */
+    /*
+        Code decompiled incorrectly, please refer to instructions dump.
+        To view partially-correct add '--show-bad-code' argument
+    */
+    public WebImage(org.json.JSONObject r5) throws java.lang.IllegalArgumentException {
+        /*
+            r4 = this;
+            android.net.Uri r0 = android.net.Uri.EMPTY
+            java.lang.String r1 = "url"
+            boolean r2 = r5.has(r1)
+            if (r2 == 0) goto L12
+            java.lang.String r1 = r5.getString(r1)     // Catch: org.json.JSONException -> L12
+            android.net.Uri r0 = android.net.Uri.parse(r1)     // Catch: org.json.JSONException -> L12
+        L12:
+            java.lang.String r1 = "width"
+            r2 = 0
+            int r1 = r5.optInt(r1, r2)
+            java.lang.String r3 = "height"
+            int r5 = r5.optInt(r3, r2)
+            r4.<init>(r0, r1, r5)
+            return
+        */
+        throw new UnsupportedOperationException("Method not decompiled: com.google.android.gms.common.images.WebImage.<init>(org.json.JSONObject):void");
+    }
+}

@@ -1,0 +1,21 @@
+package com.google.android.gms.internal.p001authapi;
+
+/* compiled from: com.google.android.gms:play-services-auth@@20.2.0 */
+/* loaded from: classes2.dex */
+public abstract class zbae extends com.google.android.gms.internal.p001authapi.zbb implements com.google.android.gms.internal.p001authapi.zbaf {
+    public zbae() {
+        super("com.google.android.gms.auth.api.identity.internal.ISaveAccountLinkingTokenCallback");
+    }
+
+    @Override // com.google.android.gms.internal.p001authapi.zbb
+    protected final boolean zba(int i, android.os.Parcel parcel, android.os.Parcel parcel2, int i2) throws android.os.RemoteException {
+        if (i != 1) {
+            return false;
+        }
+        com.google.android.gms.common.api.Status status = (com.google.android.gms.common.api.Status) com.google.android.gms.internal.p001authapi.zbc.zba(parcel, com.google.android.gms.common.api.Status.CREATOR);
+        com.google.android.gms.auth.api.identity.SaveAccountLinkingTokenResult saveAccountLinkingTokenResult = (com.google.android.gms.auth.api.identity.SaveAccountLinkingTokenResult) com.google.android.gms.internal.p001authapi.zbc.zba(parcel, com.google.android.gms.auth.api.identity.SaveAccountLinkingTokenResult.CREATOR);
+        com.google.android.gms.internal.p001authapi.zbc.zbb(parcel);
+        zbb(status, saveAccountLinkingTokenResult);
+        return true;
+    }
+}

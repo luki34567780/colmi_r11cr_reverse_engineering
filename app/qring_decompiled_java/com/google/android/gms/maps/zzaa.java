@@ -1,0 +1,21 @@
+package com.google.android.gms.maps;
+
+/* compiled from: com.google.android.gms:play-services-maps@@18.1.0 */
+/* loaded from: /tmp/dex/classes2.dex */
+final class zzaa extends com.google.android.gms.maps.internal.zzc {
+    private final com.google.android.gms.maps.GoogleMap.CancelableCallback zza;
+
+    zzaa(com.google.android.gms.maps.GoogleMap.CancelableCallback cancelableCallback) {
+        this.zza = cancelableCallback;
+    }
+
+    @Override // com.google.android.gms.maps.internal.zzd
+    public final void zzb() {
+        this.zza.onCancel();
+    }
+
+    @Override // com.google.android.gms.maps.internal.zzd
+    public final void zzc() {
+        this.zza.onFinish();
+    }
+}

@@ -1,0 +1,9 @@
+package com.google.android.gms.common.api.internal;
+
+/* compiled from: com.google.android.gms:play-services-base@@18.0.1 */
+/* loaded from: /tmp/dex/classes2.dex */
+public interface zacs {
+    void zae(com.google.android.gms.common.ConnectionResult connectionResult);
+
+    void zaf(com.google.android.gms.common.internal.IAccountAccessor iAccountAccessor, java.util.Set<com.google.android.gms.common.api.Scope> set);
+}

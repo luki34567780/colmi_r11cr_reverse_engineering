@@ -1,0 +1,6 @@
+package io.reactivex.internal.fuseable;
+
+/* loaded from: classes3.dex */
+public interface HasUpstreamObservableSource<T> {
+    io.reactivex.ObservableSource<T> source();
+}

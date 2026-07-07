@@ -1,0 +1,246 @@
+package com.qcwireless.qcwatch.ui.home.sport.adapter;
+
+/* compiled from: SportDetailAdapter.kt */
+@kotlin.Metadata(d1 = {"\u0000<\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010!\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010%\n\u0002\u0010\b\n\u0002\u0010\u0011\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0003\u0018\u00002\u000e\u0012\u0004\u0012\u00020\u0002\u0012\u0004\u0012\u00020\u00030\u0001B\u001b\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\f\u0010\u0006\u001a\b\u0012\u0004\u0012\u00020\u00020\u0007¢\u0006\u0002\u0010\bJ\u0018\u0010\u000f\u001a\u00020\u00102\u0006\u0010\u0011\u001a\u00020\u00032\u0006\u0010\u0012\u001a\u00020\u0002H\u0014R\u000e\u0010\t\u001a\u00020\nX\u0082\u000e¢\u0006\u0002\n\u0000R \u0010\u000b\u001a\u0014\u0012\u0004\u0012\u00020\r\u0012\n\u0012\b\u0012\u0004\u0012\u00020\r0\u000e0\fX\u0082\u000e¢\u0006\u0002\n\u0000¨\u0006\u0013"}, d2 = {"Lcom/qcwireless/qcwatch/ui/home/sport/adapter/SportDetailAdapter;", "Lcom/chad/library/adapter/base/BaseQuickAdapter;", "Lcom/qcwireless/qcwatch/ui/home/sport/bean/SportDetail;", "Lcom/chad/library/adapter/base/viewholder/BaseViewHolder;", "context", "Landroid/content/Context;", "data", "", "(Landroid/content/Context;Ljava/util/List;)V", "df", "Ljava/text/DecimalFormat;", "sportMap", "", "", "", "convert", "", "holder", "item", "app_championRelease"}, k = 1, mv = {1, 6, 0}, xi = 48)
+/* loaded from: /tmp/dex/classes2.dex */
+public final class SportDetailAdapter extends com.chad.library.adapter.base.BaseQuickAdapter<com.qcwireless.qcwatch.ui.home.sport.bean.SportDetail, com.chad.library.adapter.base.viewholder.BaseViewHolder> {
+    private java.text.DecimalFormat df;
+    private java.util.Map<java.lang.Integer, java.lang.Integer[]> sportMap;
+
+    /* JADX WARN: 'super' call moved to the top of the method (can break code semantics) */
+    public SportDetailAdapter(android.content.Context context, java.util.List<com.qcwireless.qcwatch.ui.home.sport.bean.SportDetail> list) {
+        super(com.qcwireless.qcwatch.R.layout.recycleview_item_sport_detail, list);
+        kotlin.jvm.internal.Intrinsics.checkNotNullParameter(context, "context");
+        kotlin.jvm.internal.Intrinsics.checkNotNullParameter(list, "data");
+        java.util.LinkedHashMap linkedHashMap = new java.util.LinkedHashMap();
+        this.sportMap = linkedHashMap;
+        linkedHashMap.put(4, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_213), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_buxing)});
+        this.sportMap.put(5, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_271), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_tiaosheng)});
+        this.sportMap.put(6, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_338), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_youyong)});
+        this.sportMap.put(7, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_295), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_paobu)});
+        java.util.Map<java.lang.Integer, java.lang.Integer[]> map = this.sportMap;
+        java.lang.Integer valueOf = java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_tubu);
+        map.put(8, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_214), valueOf});
+        this.sportMap.put(9, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_216), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_qixing)});
+        this.sportMap.put(10, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_215), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_duanlian)});
+        this.sportMap.put(11, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_217), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_huipai)});
+        this.sportMap.put(20, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_339), valueOf});
+        this.sportMap.put(21, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_340), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_yumaoqiu)});
+        this.sportMap.put(22, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_341), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_yujia)});
+        this.sportMap.put(23, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_342), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_jianshencao)});
+        this.sportMap.put(24, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_343), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_donggandanche)});
+        this.sportMap.put(25, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_344), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_pihuating)});
+        this.sportMap.put(26, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_345), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_tuoyuanji)});
+        this.sportMap.put(27, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_346), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_huachuanji)});
+        this.sportMap.put(28, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_347), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_pingpangq)});
+        this.sportMap.put(29, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_348), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_wangqiu)});
+        this.sportMap.put(30, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_349), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_gaoerfu)});
+        this.sportMap.put(31, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_350), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_lanqiu)});
+        this.sportMap.put(32, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_351), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_zuqiu)});
+        this.sportMap.put(33, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_352), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_paiqiu)});
+        this.sportMap.put(34, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_353), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_panyan)});
+        this.sportMap.put(35, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_354), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_wudao)});
+        this.sportMap.put(36, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_355), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.sport_lunhua)});
+        this.sportMap.put(40, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2590), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_40)});
+        this.sportMap.put(41, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2615), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_41)});
+        this.sportMap.put(42, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2654), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_42)});
+        this.sportMap.put(43, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2576), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_43)});
+        this.sportMap.put(44, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2526), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_44)});
+        this.sportMap.put(45, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2567), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_45)});
+        this.sportMap.put(50, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2557), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_50)});
+        this.sportMap.put(51, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2618), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_51)});
+        this.sportMap.put(52, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2613), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_52)});
+        this.sportMap.put(53, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2645), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_53)});
+        this.sportMap.put(55, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2651), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_55)});
+        this.sportMap.put(56, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2620), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_56)});
+        this.sportMap.put(57, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2597), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_57)});
+        this.sportMap.put(58, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2559), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_58)});
+        this.sportMap.put(60, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2558), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_60)});
+        this.sportMap.put(61, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2537), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_61)});
+        this.sportMap.put(62, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2535), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_62)});
+        this.sportMap.put(63, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2528), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_63)});
+        this.sportMap.put(64, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2560), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_64)});
+        this.sportMap.put(65, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2591), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_65)});
+        this.sportMap.put(66, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2610), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_66)});
+        this.sportMap.put(67, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2653), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_67)});
+        this.sportMap.put(68, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2607), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_68)});
+        this.sportMap.put(69, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2622), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_69)});
+        this.sportMap.put(70, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2584), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_70)});
+        this.sportMap.put(71, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2657), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_71)});
+        this.sportMap.put(80, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2589), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_80)});
+        this.sportMap.put(81, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2627), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_81)});
+        this.sportMap.put(82, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2563), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_82)});
+        this.sportMap.put(83, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2525), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_83)});
+        this.sportMap.put(84, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2553), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_84)});
+        this.sportMap.put(85, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2573), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_85)});
+        this.sportMap.put(86, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2617), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_86)});
+        this.sportMap.put(87, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2638), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_87)});
+        this.sportMap.put(88, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2582), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_88)});
+        this.sportMap.put(89, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2566), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_89)});
+        this.sportMap.put(90, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2672), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_90)});
+        this.sportMap.put(91, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2605), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_91)});
+        this.sportMap.put(92, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2634), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_92)});
+        this.sportMap.put(93, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2580), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_93)});
+        this.sportMap.put(94, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2596), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_94)});
+        this.sportMap.put(95, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2530), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_95)});
+        this.sportMap.put(96, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2625), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_96)});
+        this.sportMap.put(97, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2656), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_97)});
+        this.sportMap.put(98, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2570), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_98)});
+        this.sportMap.put(99, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2595), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_99)});
+        this.sportMap.put(100, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2628), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_100)});
+        this.sportMap.put(110, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2550), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_110)});
+        this.sportMap.put(111, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2574), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_111)});
+        this.sportMap.put(112, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2539), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_112)});
+        this.sportMap.put(113, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2516), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_113)});
+        this.sportMap.put(114, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2575), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_114)});
+        this.sportMap.put(115, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2673), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_115)});
+        this.sportMap.put(116, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2579), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_116)});
+        this.sportMap.put(117, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2577), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_117)});
+        this.sportMap.put(118, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2642), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_118)});
+        this.sportMap.put(119, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2548), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_119)});
+        this.sportMap.put(120, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2592), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_120)});
+        this.sportMap.put(121, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2588), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_121)});
+        this.sportMap.put(122, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2641), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_122)});
+        this.sportMap.put(123, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2643), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_123)});
+        this.sportMap.put(124, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2533), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_124)});
+        this.sportMap.put(125, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2633), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_125)});
+        this.sportMap.put(126, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2598), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_126)});
+        this.sportMap.put(130, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2603), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_130)});
+        this.sportMap.put(131, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2623), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_131)});
+        this.sportMap.put(132, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2640), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_132)});
+        this.sportMap.put(133, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2630), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_133)});
+        this.sportMap.put(134, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2631), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_134)});
+        this.sportMap.put(135, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2604), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_135)});
+        this.sportMap.put(136, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2629), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_136)});
+        this.sportMap.put(137, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2578), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_137)});
+        this.sportMap.put(138, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2671), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_138)});
+        this.sportMap.put(139, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2569), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_139)});
+        this.sportMap.put(140, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2606), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_140)});
+        java.util.Map<java.lang.Integer, java.lang.Integer[]> map2 = this.sportMap;
+        java.lang.Integer valueOf2 = java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2568);
+        map2.put(141, new java.lang.Integer[]{valueOf2, java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_141)});
+        this.sportMap.put(142, new java.lang.Integer[]{valueOf2, java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_142)});
+        this.sportMap.put(150, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2612), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_150)});
+        this.sportMap.put(151, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2611), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_151)});
+        this.sportMap.put(152, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2519), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_152)});
+        this.sportMap.put(153, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2581), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_153)});
+        this.sportMap.put(154, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2674), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_154)});
+        this.sportMap.put(155, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2602), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_155)});
+        this.sportMap.put(156, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2522), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_156)});
+        this.sportMap.put(157, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2587), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_157)});
+        this.sportMap.put(158, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2518), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_158)});
+        this.sportMap.put(159, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2621), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_159)});
+        this.sportMap.put(160, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2520), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_160)});
+        this.sportMap.put(161, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2585), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_161)});
+        this.sportMap.put(162, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2599), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_162)});
+        this.sportMap.put(163, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2658), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_163)});
+        this.sportMap.put(164, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2632), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_164)});
+        this.sportMap.put(165, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2540), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_165)});
+        this.sportMap.put(166, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2626), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_166)});
+        this.sportMap.put(167, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2524), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_167)});
+        this.sportMap.put(168, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2571), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_168)});
+        this.sportMap.put(169, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2619), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_169)});
+        this.sportMap.put(170, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2608), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_170)});
+        this.sportMap.put(171, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2532), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_171)});
+        this.sportMap.put(172, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2562), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_172)});
+        this.sportMap.put(173, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2531), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_173)});
+        this.sportMap.put(174, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2515), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_174)});
+        this.sportMap.put(175, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2593), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_175)});
+        this.sportMap.put(180, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2556), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_180)});
+        this.sportMap.put(181, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2541), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_181)});
+        this.sportMap.put(182, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2583), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_182)});
+        this.sportMap.put(183, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2527), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_183)});
+        this.sportMap.put(184, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2545), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_184)});
+        this.sportMap.put(185, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2561), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_185)});
+        this.sportMap.put(186, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2572), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_186)});
+        this.sportMap.put(187, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2616), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_187)});
+        this.sportMap.put(java.lang.Integer.valueOf(com.luck.picture.lib.config.PictureConfig.CHOOSE_REQUEST), new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2594), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_188)});
+        this.sportMap.put(189, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2546), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_189)});
+        this.sportMap.put(190, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2624), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_190)});
+        this.sportMap.put(191, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2529), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_191)});
+        this.sportMap.put(192, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2549), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_192)});
+        this.sportMap.put(193, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2652), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_193)});
+        this.sportMap.put(194, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2536), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_194)});
+        this.sportMap.put(195, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2538), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_195)});
+        this.sportMap.put(196, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2555), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_196)});
+        this.sportMap.put(197, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2675), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_197)});
+        this.sportMap.put(198, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2523), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_198)});
+        this.sportMap.put(199, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2646), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_199)});
+        this.sportMap.put(200, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2648), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_200)});
+        this.sportMap.put(java.lang.Integer.valueOf(com.qcwireless.qcwatch.ui.base.imagepicker.cropper.CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE), new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2647), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_201)});
+        this.sportMap.put(202, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2649), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_202)});
+        this.sportMap.put(210, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2554), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_210)});
+        this.sportMap.put(211, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2544), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_211)});
+        this.sportMap.put(java.lang.Integer.valueOf(com.realsil.sdk.bbpro.equalizer.AudioEq.PARSE_EQ_DATA_LENGTH), new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2543), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_212)});
+        this.sportMap.put(213, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2542), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_213)});
+        this.sportMap.put(214, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2517), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_214)});
+        this.sportMap.put(215, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2534), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_215)});
+        this.sportMap.put(216, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2586), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_216)});
+        this.sportMap.put(217, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2601), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_217)});
+        this.sportMap.put(218, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2609), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_218)});
+        this.sportMap.put(219, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2659), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_219)});
+        this.sportMap.put(220, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2635), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_220)});
+        this.sportMap.put(221, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2521), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_221)});
+        this.sportMap.put(222, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2636), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_222)});
+        this.sportMap.put(223, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2514), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_223)});
+        this.sportMap.put(224, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2650), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_224)});
+        this.sportMap.put(225, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2655), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_225)});
+        this.sportMap.put(230, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2552), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_230)});
+        this.sportMap.put(231, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2639), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_231)});
+        this.sportMap.put(232, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2551), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_232)});
+        this.sportMap.put(233, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2670), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_233)});
+        this.sportMap.put(234, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2600), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_234)});
+        this.sportMap.put(235, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2637), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_235)});
+        this.sportMap.put(236, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2614), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_236)});
+        this.sportMap.put(237, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2547), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_237)});
+        this.sportMap.put(238, new java.lang.Integer[]{java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.string.qc_text_2565), java.lang.Integer.valueOf(com.qcwireless.qcwatch.R.mipmap.ic_sport_238)});
+        java.text.DecimalFormat decimalFormat = new java.text.DecimalFormat("0");
+        this.df = decimalFormat;
+        decimalFormat.setRoundingMode(java.math.RoundingMode.DOWN);
+    }
+
+    /* JADX INFO: Access modifiers changed from: protected */
+    @Override // com.chad.library.adapter.base.BaseQuickAdapter
+    public void convert(com.chad.library.adapter.base.viewholder.BaseViewHolder holder, com.qcwireless.qcwatch.ui.home.sport.bean.SportDetail item) {
+        kotlin.jvm.internal.Intrinsics.checkNotNullParameter(holder, "holder");
+        kotlin.jvm.internal.Intrinsics.checkNotNullParameter(item, "item");
+        android.widget.TextView textView = (android.widget.TextView) holder.getView(com.qcwireless.qcwatch.R.id.tv_sport_distance);
+        android.widget.TextView textView2 = (android.widget.TextView) holder.getView(com.qcwireless.qcwatch.R.id.tv_sport_duration);
+        android.widget.TextView textView3 = (android.widget.TextView) holder.getView(com.qcwireless.qcwatch.R.id.tv_sport_speed);
+        android.view.View view = (androidx.constraintlayout.widget.Group) holder.getView(com.qcwireless.qcwatch.R.id.group_speed);
+        android.widget.ImageView imageView = (android.widget.ImageView) holder.getView(com.qcwireless.qcwatch.R.id.sport_type_image);
+        if (this.sportMap.get(java.lang.Integer.valueOf(item.getSportType())) != null) {
+            java.lang.Integer[] numArr = this.sportMap.get(java.lang.Integer.valueOf(item.getSportType()));
+            kotlin.jvm.internal.Intrinsics.checkNotNull(numArr);
+            imageView.setImageResource(numArr[1].intValue());
+        }
+        textView2.setText(com.qcwireless.qc_utils.date.DateUtil.secondToStr(item.getDuration()));
+        if (item.getDistance() > 0.0f) {
+            int i = 5999;
+            try {
+                if (com.qcwireless.qcwatch.base.pref.UserConfig.INSTANCE.getInstance().getMetric()) {
+                    float distance = (item.getDistance() * 1.0f) / 1000;
+                    textView.setText((java.lang.Math.round(distance * 100) / 100.0f) + "km");
+                    int duration = (int) (((float) (item.getDuration() * 1000)) / item.getDistance());
+                    if (duration <= 5999) {
+                        i = duration;
+                    }
+                    textView3.setText(com.qcwireless.qc_utils.date.DateUtil.dayMinToStrSymbol(i));
+                } else {
+                    float kmToIn = com.qcwireless.qcwatch.base.utils.MetricUtilsKt.kmToIn((item.getDistance() * 1.0f) / 1000);
+                    textView.setText((java.lang.Math.round(kmToIn * 100) / 100.0f) + "mile");
+                    int duration2 = (int) ((((double) item.getDuration()) * 1609.34d) / ((double) item.getDistance()));
+                    if (duration2 <= 5999) {
+                        i = duration2;
+                    }
+                    textView3.setText(com.qcwireless.qc_utils.date.DateUtil.dayMinToStrSymbol(i));
+                }
+            } catch (java.lang.Exception unused) {
+            }
+            com.qcwireless.qcwatch.base.view.ViewKt.visible(view);
+            return;
+        }
+        textView.setText(this.df.format(java.lang.Float.valueOf((item.getCalorie() * 1.0f) / 1000)) + "kcal");
+        com.qcwireless.qcwatch.base.view.ViewKt.gone(view);
+    }
+}

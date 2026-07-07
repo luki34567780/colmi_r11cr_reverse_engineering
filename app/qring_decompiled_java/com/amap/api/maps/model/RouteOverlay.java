@@ -1,0 +1,20 @@
+package com.amap.api.maps.model;
+
+/* loaded from: classes.dex */
+public class RouteOverlay {
+    com.autonavi.ae.gmap.gloverlay.BaseRouteOverlay a;
+
+    public void addRouteItem(int i, com.autonavi.ae.gmap.gloverlay.GLRouteProperty[] gLRoutePropertyArr, boolean z, long j, int i2) {
+    }
+
+    public void remove() {
+    }
+
+    public void removeRouteName() {
+    }
+
+    public RouteOverlay(com.autonavi.ae.gmap.gloverlay.BaseRouteOverlay baseRouteOverlay) {
+        this.a = null;
+        this.a = baseRouteOverlay;
+    }
+}

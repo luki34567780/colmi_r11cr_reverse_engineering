@@ -1,0 +1,54 @@
+package coil.util;
+
+/* compiled from: DebugLogger.kt */
+@kotlin.Metadata(d1 = {"\u0000(\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0002\b\u0006\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0003\n\u0002\u0010\u0003\n\u0000\u0018\u00002\u00020\u0001B\u0011\b\u0007\u0012\b\b\u0002\u0010\u0002\u001a\u00020\u0003¢\u0006\u0002\u0010\u0004J\u0010\u0010\t\u001a\u00020\n2\u0006\u0010\u0005\u001a\u00020\u0003H\u0002J,\u0010\u000b\u001a\u00020\n2\u0006\u0010\f\u001a\u00020\r2\u0006\u0010\u000e\u001a\u00020\u00032\b\u0010\u000f\u001a\u0004\u0018\u00010\r2\b\u0010\u0010\u001a\u0004\u0018\u00010\u0011H\u0016R$\u0010\u0002\u001a\u00020\u00032\u0006\u0010\u0005\u001a\u00020\u0003@VX\u0096\u000e¢\u0006\u000e\n\u0000\u001a\u0004\b\u0006\u0010\u0007\"\u0004\b\b\u0010\u0004¨\u0006\u0012"}, d2 = {"Lcoil/util/DebugLogger;", "Lcoil/util/Logger;", "level", "", "(I)V", "value", "getLevel", "()I", "setLevel", "assertValidLevel", "", "log", "tag", "", "priority", "message", "throwable", "", "coil-base_release"}, k = 1, mv = {1, 6, 0}, xi = 48)
+/* loaded from: classes.dex */
+public final class DebugLogger implements coil.util.Logger {
+    private int level;
+
+    public DebugLogger() {
+        this(0, 1, null);
+    }
+
+    public DebugLogger(int i) {
+        this.level = i;
+        assertValidLevel(i);
+    }
+
+    public /* synthetic */ DebugLogger(int i, int i2, kotlin.jvm.internal.DefaultConstructorMarker defaultConstructorMarker) {
+        this((i2 & 1) != 0 ? 3 : i);
+    }
+
+    @Override // coil.util.Logger
+    public int getLevel() {
+        return this.level;
+    }
+
+    @Override // coil.util.Logger
+    public void setLevel(int i) {
+        assertValidLevel(i);
+        this.level = i;
+    }
+
+    @Override // coil.util.Logger
+    public void log(java.lang.String tag, int priority, java.lang.String message, java.lang.Throwable throwable) {
+        if (message != null) {
+            android.util.Log.println(priority, tag, message);
+        }
+        if (throwable != null) {
+            java.io.StringWriter stringWriter = new java.io.StringWriter();
+            throwable.printStackTrace(new java.io.PrintWriter(stringWriter));
+            android.util.Log.println(priority, tag, stringWriter.toString());
+        }
+    }
+
+    private final void assertValidLevel(int value) {
+        boolean z = false;
+        if (2 <= value && value < 8) {
+            z = true;
+        }
+        if (!z) {
+            throw new java.lang.IllegalArgumentException(kotlin.jvm.internal.Intrinsics.stringPlus("Invalid log level: ", java.lang.Integer.valueOf(value)).toString());
+        }
+    }
+}

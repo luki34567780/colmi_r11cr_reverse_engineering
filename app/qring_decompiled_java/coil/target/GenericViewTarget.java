@@ -1,0 +1,83 @@
+package coil.target;
+
+/* compiled from: GenericViewTarget.kt */
+@kotlin.Metadata(d1 = {"\u00008\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0002\b\u0006\b&\u0018\u0000*\b\b\u0000\u0010\u0001*\u00020\u00022\b\u0012\u0004\u0012\u0002H\u00010\u00032\u00020\u00042\u00020\u0005B\u0005¢\u0006\u0002\u0010\u0006J\u0012\u0010\u000f\u001a\u00020\u00102\b\u0010\u0011\u001a\u0004\u0018\u00010\bH\u0016J\u0012\u0010\u0012\u001a\u00020\u00102\b\u0010\u0013\u001a\u0004\u0018\u00010\bH\u0016J\u0010\u0010\u0012\u001a\u00020\u00102\u0006\u0010\u0014\u001a\u00020\u0015H\u0016J\u0010\u0010\u0016\u001a\u00020\u00102\u0006\u0010\u0014\u001a\u00020\u0015H\u0016J\u0010\u0010\u0017\u001a\u00020\u00102\u0006\u0010\u0018\u001a\u00020\bH\u0016J\b\u0010\u0019\u001a\u00020\u0010H\u0004J\u0012\u0010\u001a\u001a\u00020\u00102\b\u0010\u0007\u001a\u0004\u0018\u00010\bH\u0004R\u001a\u0010\u0007\u001a\u0004\u0018\u00010\bX¦\u000e¢\u0006\f\u001a\u0004\b\t\u0010\n\"\u0004\b\u000b\u0010\fR\u000e\u0010\r\u001a\u00020\u000eX\u0082\u000e¢\u0006\u0002\n\u0000¨\u0006\u001b"}, d2 = {"Lcoil/target/GenericViewTarget;", androidx.exifinterface.media.ExifInterface.GPS_DIRECTION_TRUE, "Landroid/view/View;", "Lcoil/target/ViewTarget;", "Lcoil/transition/TransitionTarget;", "Landroidx/lifecycle/DefaultLifecycleObserver;", "()V", "drawable", "Landroid/graphics/drawable/Drawable;", "getDrawable", "()Landroid/graphics/drawable/Drawable;", "setDrawable", "(Landroid/graphics/drawable/Drawable;)V", "isStarted", "", "onError", "", "error", "onStart", "placeholder", "owner", "Landroidx/lifecycle/LifecycleOwner;", "onStop", "onSuccess", "result", "updateAnimation", "updateDrawable", "coil-base_release"}, k = 1, mv = {1, 6, 0}, xi = 48)
+/* loaded from: classes.dex */
+public abstract class GenericViewTarget<T extends android.view.View> implements coil.target.ViewTarget<T>, coil.transition.TransitionTarget, androidx.lifecycle.DefaultLifecycleObserver {
+    private boolean isStarted;
+
+    @Override // coil.transition.TransitionTarget
+    public abstract android.graphics.drawable.Drawable getDrawable();
+
+    @Override // androidx.lifecycle.DefaultLifecycleObserver, androidx.lifecycle.FullLifecycleObserver
+    public /* synthetic */ void onCreate(androidx.lifecycle.LifecycleOwner lifecycleOwner) {
+        androidx.lifecycle.DefaultLifecycleObserver.CC.$default$onCreate(this, lifecycleOwner);
+    }
+
+    @Override // androidx.lifecycle.DefaultLifecycleObserver, androidx.lifecycle.FullLifecycleObserver
+    public /* synthetic */ void onDestroy(androidx.lifecycle.LifecycleOwner lifecycleOwner) {
+        androidx.lifecycle.DefaultLifecycleObserver.CC.$default$onDestroy(this, lifecycleOwner);
+    }
+
+    @Override // androidx.lifecycle.DefaultLifecycleObserver, androidx.lifecycle.FullLifecycleObserver
+    public /* synthetic */ void onPause(androidx.lifecycle.LifecycleOwner lifecycleOwner) {
+        androidx.lifecycle.DefaultLifecycleObserver.CC.$default$onPause(this, lifecycleOwner);
+    }
+
+    @Override // androidx.lifecycle.DefaultLifecycleObserver, androidx.lifecycle.FullLifecycleObserver
+    public /* synthetic */ void onResume(androidx.lifecycle.LifecycleOwner lifecycleOwner) {
+        androidx.lifecycle.DefaultLifecycleObserver.CC.$default$onResume(this, lifecycleOwner);
+    }
+
+    public abstract void setDrawable(android.graphics.drawable.Drawable drawable);
+
+    @Override // coil.target.Target
+    public void onStart(android.graphics.drawable.Drawable placeholder) {
+        updateDrawable(placeholder);
+    }
+
+    @Override // coil.target.Target
+    public void onError(android.graphics.drawable.Drawable error) {
+        updateDrawable(error);
+    }
+
+    @Override // coil.target.Target
+    public void onSuccess(android.graphics.drawable.Drawable result) {
+        updateDrawable(result);
+    }
+
+    @Override // androidx.lifecycle.DefaultLifecycleObserver, androidx.lifecycle.FullLifecycleObserver
+    public void onStart(androidx.lifecycle.LifecycleOwner owner) {
+        this.isStarted = true;
+        updateAnimation();
+    }
+
+    @Override // androidx.lifecycle.DefaultLifecycleObserver, androidx.lifecycle.FullLifecycleObserver
+    public void onStop(androidx.lifecycle.LifecycleOwner owner) {
+        this.isStarted = false;
+        updateAnimation();
+    }
+
+    protected final void updateDrawable(android.graphics.drawable.Drawable drawable) {
+        java.lang.Object drawable2 = getDrawable();
+        android.graphics.drawable.Animatable animatable = drawable2 instanceof android.graphics.drawable.Animatable ? (android.graphics.drawable.Animatable) drawable2 : null;
+        if (animatable != null) {
+            animatable.stop();
+        }
+        setDrawable(drawable);
+        updateAnimation();
+    }
+
+    protected final void updateAnimation() {
+        java.lang.Object drawable = getDrawable();
+        android.graphics.drawable.Animatable animatable = drawable instanceof android.graphics.drawable.Animatable ? (android.graphics.drawable.Animatable) drawable : null;
+        if (animatable == null) {
+            return;
+        }
+        if (this.isStarted) {
+            animatable.start();
+        } else {
+            animatable.stop();
+        }
+    }
+}

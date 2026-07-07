@@ -1,0 +1,85 @@
+package com.google.android.material.behavior;
+
+/* loaded from: /tmp/dex/classes2.dex */
+public class HideBottomViewOnScrollBehavior<V extends android.view.View> extends androidx.coordinatorlayout.widget.CoordinatorLayout.Behavior<V> {
+    protected static final int ENTER_ANIMATION_DURATION = 225;
+    protected static final int EXIT_ANIMATION_DURATION = 175;
+    private static final int STATE_SCROLLED_DOWN = 1;
+    private static final int STATE_SCROLLED_UP = 2;
+    private int additionalHiddenOffsetY;
+    private android.view.ViewPropertyAnimator currentAnimator;
+    private int currentState;
+    private int height;
+
+    public boolean onStartNestedScroll(androidx.coordinatorlayout.widget.CoordinatorLayout coordinatorLayout, V v, android.view.View view, android.view.View view2, int i, int i2) {
+        return i == 2;
+    }
+
+    public HideBottomViewOnScrollBehavior() {
+        this.height = 0;
+        this.currentState = 2;
+        this.additionalHiddenOffsetY = 0;
+    }
+
+    public HideBottomViewOnScrollBehavior(android.content.Context context, android.util.AttributeSet attributeSet) {
+        super(context, attributeSet);
+        this.height = 0;
+        this.currentState = 2;
+        this.additionalHiddenOffsetY = 0;
+    }
+
+    public boolean onLayoutChild(androidx.coordinatorlayout.widget.CoordinatorLayout coordinatorLayout, V v, int i) {
+        this.height = v.getMeasuredHeight() + ((android.view.ViewGroup.MarginLayoutParams) v.getLayoutParams()).bottomMargin;
+        return super.onLayoutChild(coordinatorLayout, v, i);
+    }
+
+    public void setAdditionalHiddenOffsetY(V v, int i) {
+        this.additionalHiddenOffsetY = i;
+        if (this.currentState == 1) {
+            v.setTranslationY(this.height + i);
+        }
+    }
+
+    public void onNestedScroll(androidx.coordinatorlayout.widget.CoordinatorLayout coordinatorLayout, V v, android.view.View view, int i, int i2, int i3, int i4, int i5, int[] iArr) {
+        if (i2 > 0) {
+            slideDown(v);
+        } else if (i2 < 0) {
+            slideUp(v);
+        }
+    }
+
+    public void slideUp(V v) {
+        if (this.currentState == 2) {
+            return;
+        }
+        android.view.ViewPropertyAnimator viewPropertyAnimator = this.currentAnimator;
+        if (viewPropertyAnimator != null) {
+            viewPropertyAnimator.cancel();
+            v.clearAnimation();
+        }
+        this.currentState = 2;
+        animateChildTo(v, 0, 225L, com.google.android.material.animation.AnimationUtils.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
+    }
+
+    public void slideDown(V v) {
+        if (this.currentState == 1) {
+            return;
+        }
+        android.view.ViewPropertyAnimator viewPropertyAnimator = this.currentAnimator;
+        if (viewPropertyAnimator != null) {
+            viewPropertyAnimator.cancel();
+            v.clearAnimation();
+        }
+        this.currentState = 1;
+        animateChildTo(v, this.height + this.additionalHiddenOffsetY, 175L, com.google.android.material.animation.AnimationUtils.FAST_OUT_LINEAR_IN_INTERPOLATOR);
+    }
+
+    private void animateChildTo(V v, int i, long j, android.animation.TimeInterpolator timeInterpolator) {
+        this.currentAnimator = v.animate().translationY(i).setInterpolator(timeInterpolator).setDuration(j).setListener(new android.animation.AnimatorListenerAdapter() { // from class: com.google.android.material.behavior.HideBottomViewOnScrollBehavior.1
+            @Override // android.animation.AnimatorListenerAdapter, android.animation.Animator.AnimatorListener
+            public void onAnimationEnd(android.animation.Animator animator) {
+                com.google.android.material.behavior.HideBottomViewOnScrollBehavior.this.currentAnimator = null;
+            }
+        });
+    }
+}

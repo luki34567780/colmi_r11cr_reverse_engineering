@@ -1,0 +1,68 @@
+package com.qcwireless.qcwatch.ui.home.healthy.vm;
+
+/* compiled from: HealthyViewModel.kt */
+@kotlin.Metadata(d1 = {"\u0000\n\n\u0000\n\u0002\u0010\u0002\n\u0002\u0018\u0002\u0010\u0000\u001a\u00020\u0001*\u00020\u0002H\u008a@"}, d2 = {"<anonymous>", "", "Lkotlinx/coroutines/CoroutineScope;"}, k = 3, mv = {1, 6, 0}, xi = 48)
+@kotlin.coroutines.jvm.internal.DebugMetadata(c = "com.qcwireless.qcwatch.ui.home.healthy.vm.HealthyViewModel$initSupportFunction$6", f = "HealthyViewModel.kt", i = {}, l = {308, 309}, m = "invokeSuspend", n = {}, s = {})
+/* loaded from: /tmp/dex/classes2.dex */
+final class HealthyViewModel$initSupportFunction$6 extends kotlin.coroutines.jvm.internal.SuspendLambda implements kotlin.jvm.functions.Function2<kotlinx.coroutines.CoroutineScope, kotlin.coroutines.Continuation<? super kotlin.Unit>, java.lang.Object> {
+    int label;
+
+    HealthyViewModel$initSupportFunction$6(kotlin.coroutines.Continuation<? super com.qcwireless.qcwatch.ui.home.healthy.vm.HealthyViewModel$initSupportFunction$6> continuation) {
+        super(2, continuation);
+    }
+
+    public final kotlin.coroutines.Continuation<kotlin.Unit> create(java.lang.Object obj, kotlin.coroutines.Continuation<?> continuation) {
+        return new com.qcwireless.qcwatch.ui.home.healthy.vm.HealthyViewModel$initSupportFunction$6(continuation);
+    }
+
+    public final java.lang.Object invoke(kotlinx.coroutines.CoroutineScope coroutineScope, kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+        return create(coroutineScope, continuation).invokeSuspend(kotlin.Unit.INSTANCE);
+    }
+
+    public final java.lang.Object invokeSuspend(java.lang.Object obj) {
+        java.lang.Object coroutine_suspended = kotlin.coroutines.intrinsics.IntrinsicsKt.getCOROUTINE_SUSPENDED();
+        int i = this.label;
+        if (i == 0) {
+            kotlin.ResultKt.throwOnFailure(obj);
+            this.label = 1;
+            obj = com.qcwireless.qcwatch.ui.base.repository.device.DeviceSettingRepository.INSTANCE.getGetInstance().getDeviceLocation(com.qcwireless.qcwatch.base.pref.UserConfig.INSTANCE.getInstance().getDeviceAddressNoClear(), (kotlin.coroutines.Continuation) this);
+            if (obj == coroutine_suspended) {
+                return coroutine_suspended;
+            }
+        } else {
+            if (i != 1) {
+                if (i == 2) {
+                    kotlin.ResultKt.throwOnFailure(obj);
+                    return kotlin.Unit.INSTANCE;
+                }
+                throw new java.lang.IllegalStateException("call to 'resume' before 'invoke' with coroutine");
+            }
+            kotlin.ResultKt.throwOnFailure(obj);
+        }
+        this.label = 2;
+        if (((kotlinx.coroutines.flow.Flow) obj).collect(new kotlinx.coroutines.flow.FlowCollector() { // from class: com.qcwireless.qcwatch.ui.home.healthy.vm.HealthyViewModel$initSupportFunction$6.1
+            public /* bridge */ /* synthetic */ java.lang.Object emit(java.lang.Object obj2, kotlin.coroutines.Continuation continuation) {
+                return emit((com.qcwireless.qcwatch.ui.base.bean.weather.MyLocationBean) obj2, (kotlin.coroutines.Continuation<? super kotlin.Unit>) continuation);
+            }
+
+            public final java.lang.Object emit(com.qcwireless.qcwatch.ui.base.bean.weather.MyLocationBean myLocationBean, kotlin.coroutines.Continuation<? super kotlin.Unit> continuation) {
+                if (myLocationBean != null) {
+                    java.lang.String address = myLocationBean.getAddress();
+                    byte[] bytes = address.getBytes(kotlin.text.Charsets.UTF_8);
+                    kotlin.jvm.internal.Intrinsics.checkNotNullExpressionValue(bytes, "this as java.lang.String).getBytes(charset)");
+                    if (bytes.length > 100) {
+                        address = com.qcwireless.qcwatch.base.utils.MetricUtilsKt.getWholeText(address, 98);
+                    }
+                    java.lang.String str = address;
+                    if (str.length() > 0) {
+                        com.oudmon.ble.base.communication.LargeDataHandler.getInstance().writeLocation(myLocationBean.getLongitude(), myLocationBean.getLatitude(), str);
+                    }
+                }
+                return kotlin.Unit.INSTANCE;
+            }
+        }, (kotlin.coroutines.Continuation) this) == coroutine_suspended) {
+            return coroutine_suspended;
+        }
+        return kotlin.Unit.INSTANCE;
+    }
+}
