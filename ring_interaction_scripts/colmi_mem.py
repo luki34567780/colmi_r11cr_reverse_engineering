@@ -31,13 +31,13 @@ CMD   = 0x37   # hooked command (BLE-reachable stress-for-day handler)
 MAGIC = 0xFE
 OP_READ, OP_WRITE = 1, 2
 
-# Known ground-truth words (little-endian memory) for --verify.
-# NOTE: addresses MUST be 4-byte aligned — the hook does a plain LDR, and an unaligned
-# load faults (HardFault -> reboot) if the firmware traps unaligned access. 0x848052 is
-# unaligned; use 0x848050 instead to prove the cave content.
-# 0x826000 = vector table  00 48 00 47 -> u32 0x47004800 (any correct read proves the hook)
-# 0x848050 = cave: 18 00 |41 78| ...    -> u32 0x78411800 (0x848052=41,53=78 => hook bytes present)
-KNOWN = {0x00826000: 0x47004800, 0x00848050: 0x78411800}
+# Known ground-truth words (little-endian memory) for --verify. Addresses are RUNTIME
+# addresses. IMPORTANT: runtime = Ghidra-address + 0x400 (the 0x400 Realtek image
+# descriptor sits at the bank base 0x826000, so the payload/code starts at 0x826400).
+#   0x826400 = payload vector table (Ghidra 0x826000) -> u32 0x47004800
+#   0x82BAB8 = our in-place hook's own bytes (Ghidra 0x82B6B8: ldrb r1,[r0,#1]; cmp #0xfe)
+#              -> u32 0x29FE7841  (the hook reading itself back = proof it's live)
+KNOWN = {0x00826400: 0x47004800, 0x0082BAB8: 0x29FE7841}
 
 
 def make_packet(cmd: int, payload: bytes) -> bytes:
@@ -81,6 +81,55 @@ class MemClient:
         return r
 
 
+def _request_fast_connection_interval(address, min_units=6, max_units=6, latency=0, timeout_units=500):
+    """Ask the controller for a short LE connection interval (default 6*1.25ms=7.5ms).
+
+    The ring requests a slow power-saving interval right after connecting (observed
+    ~625ms, i.e. 1.6 reads/sec even with a tight request/response loop) and BlueZ just
+    accepts it. hcitool lecup issues a raw HCI_LE_Connection_Update_Command to override
+    it. Requires cap_net_admin,cap_net_raw on /usr/bin/hcitool (setcap, one-time, see
+    [[ghidra-thumb-jumptable-technique]]-adjacent mem-rw-hook notes) — without it this
+    just prints a warning and the transfer stays slow but correct.
+    """
+    import subprocess
+    try:
+        con = subprocess.run(["hcitool", "con"], capture_output=True, text=True, timeout=5)
+    except Exception as e:
+        print(f"  [interval] hcitool con failed: {e}")
+        return
+    handle = None
+    for line in con.stdout.splitlines():
+        if "LE" in line and address.lower() in line.lower():
+            for tok_i, tok in enumerate(line.split()):
+                if tok == "handle" and tok_i + 1 < len(line.split()):
+                    handle = int(line.split()[tok_i + 1])
+                    break
+            break
+    if handle is None:
+        # fall back to the sole LE connection, in case the address is an RPA mismatch
+        le_lines = [l for l in con.stdout.splitlines() if "LE" in l]
+        if len(le_lines) == 1:
+            parts = le_lines[0].split()
+            if "handle" in parts:
+                handle = int(parts[parts.index("handle") + 1])
+    if handle is None:
+        print("  [interval] could not find connection handle; skipping interval speedup")
+        return
+    try:
+        r = subprocess.run(
+            ["hcitool", "lecup", f"--handle=0x{handle:04x}",
+             f"--min={min_units}", f"--max={max_units}",
+             f"--latency={latency}", f"--timeout={timeout_units}"],
+            capture_output=True, text=True, timeout=5)
+        if r.returncode == 0 and "Could not" not in r.stdout:
+            print(f"  [interval] requested {min_units*1.25:.1f}-{max_units*1.25:.1f}ms interval on handle 0x{handle:04x}")
+        else:
+            print(f"  [interval] lecup failed ({r.stdout.strip() or r.stderr.strip()}) — "
+                  f"run: sudo setcap 'cap_net_admin,cap_net_raw+eip' /usr/bin/hcitool")
+    except Exception as e:
+        print(f"  [interval] hcitool lecup failed: {e}")
+
+
 async def _connect_with_retry(address, attempts=12):
     """BlueZ auto-connects to the paired ring; force a disconnect + settle before
     each try so a fresh connect can win the race."""
@@ -107,6 +156,7 @@ async def run(address, action):
         print("[FAIL] could not connect (BlueZ auto-connect race)"); sys.exit(1)
     try:
         print(f"Connected: {client.is_connected}")
+        _request_fast_connection_interval(address)
         await client.start_notify(NOTIFY_CHAR, mc.on_notify)
         await asyncio.sleep(0.5)
 
@@ -129,8 +179,7 @@ async def run(address, action):
             if ok:
                 print("*** HOOK IS LIVE — the ring is running our patched firmware. ***")
             else:
-                print("!!! Hook did not answer as expected — see readings above.")
-                print("    (all-zero / no-response at 0x848052 suggests the OLD firmware is booting.)")
+                print("!!! Reads did not match — check the RUNTIME addresses (runtime = Ghidra + 0x400).")
             sys.exit(0 if ok else 2)
 
         elif action[0] == "read":
