@@ -1,35 +1,33 @@
 #!/usr/bin/env python3
 """
-Colmi R11CR — live heart-rate chart.
+Colmi R11CR — live heart-rate chart, using the ring's genuine continuous
+measurement mode (BLE cmd 0x69, reading_type=6).
 
-Two modes, both BLE cmd 0x69 (StartHeartRateReq in the QRing APK):
+Background: the ring's normal "start heart-rate measurement" (reading_type=1,
+same as the app's "Measure Now") is a spot-check — warm up ~15-30s, lock one
+value, hold it briefly, go silent. reading_type=6 ("realtime", undocumented,
+unused by the official app) is a *different* firmware code path
+(realtime_reading_report_type6, found via Ghidra) that streams a fresh sample
+about every 500ms — but it force-stops after a fixed ~40s budget (10s warm-up
++ 30s streaming). Sending another start command with action=3 ("continue")
+before that ~40s mark resets the streaming budget without paying the 10s
+warm-up penalty again, as long as it's sent after the first ~10s — confirmed
+working consistently on real hardware. This script sends that keep-alive
+automatically every KEEPALIVE_INTERVAL seconds, so the stream just keeps
+going indefinitely.
 
-  spot (default) — type=1, "measure now". Send once, then just listen; the
-    ring locks a stable BPM after a ~15-30s warm-up, holds/repeats it for a
-    few seconds, then goes fully silent on its own (confirmed by testing).
-    We detect that silence (no packets at all, not just value=0) and start a
-    fresh cycle. This is the same flow the app's manual "Measure Now" button
-    uses — a spot-check, not a continuous monitor. Expect one real reading
-    roughly every 25-30 seconds.
-
-  --realtime (EXPERIMENTAL) — type=6, using the request class's own
-    ACTION_START/CONTINUE/STOP bytes (1/3/4). This is a second, distinct
-    packet the QRing APK's StartHeartRateReq class can build
-    (getRealtimeHeartRate()) but which has ZERO call sites in the decompiled
-    app — unused in this build, so it's unverified whether the firmware
-    honors it as a genuinely continuous stream. Worth trying since it's
-    cheap and firmware-side Ghidra analysis shows type=6 is dispatched by a
-    separate code path (realtime_reading_report_type6) from the type=1..10
-    spot-check flow. If it behaves like `spot` (locks briefly then goes
-    silent), it isn't actually different in practice.
-
-Every decoded BPM value is plotted live with matplotlib as it arrives.
+(An earlier version of this script tried to derive its own BPM estimate via
+DIY beat detection on a raw byte that rides along in every reading_type=1
+response. That byte turned out — per Ghidra ground truth — to be an internal
+intermediate value of the vendor's own HR algorithm, not real sensor data, so
+that whole approach has been dropped. This version just plots the ring's own
+officially-computed BPM, sampled at the rate reading_type=6 actually streams
+it, which is high enough on its own.)
 
 Usage:
     python colmi_heart_rate_live.py --scan
     python colmi_heart_rate_live.py --address XX:XX:XX:XX:XX:XX
-    python colmi_heart_rate_live.py --address XX:XX:XX:XX:XX:XX --realtime
-    python colmi_heart_rate_live.py --address XX:XX:XX:XX:XX:XX --window 120
+    python colmi_heart_rate_live.py --address XX:XX:XX:XX:XX:XX --window 60
 """
 
 import argparse
@@ -46,32 +44,20 @@ from bleak import BleakClient, BleakScanner
 WRITE_CHAR = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
 NOTIFY_CHAR = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
-CMD_START = 0x69  # StartHeartRateReq (cmd 105 in the QRing APK)
-CMD_STOP = 0x6A   # StopHeartRateReq (cmd 106)
+CMD_START = 0x69  # ble_cmd_realtime_measure
+CMD_STOP = 0x6A
 
-TYPE_HR_SPOT = 1      # StartHeartRateReq.TYPE_HEARTRATE — single-shot "measure now"
-TYPE_HR_REALTIME = 6  # StartHeartRateReq.getRealtimeHeartRate() type — EXPERIMENTAL, see module docstring
-
-# StartHeartRateReq.ACTION_* — only meaningful for TYPE_HR_REALTIME's request
-# layout ([type, action]); the spot-check request layout is [type, sub=0].
+TYPE_REALTIME = 6      # undocumented reading_type -> realtime_reading_report_type6
 ACTION_START = 1
-ACTION_CONTINUE = 3
+ACTION_CONTINUE = 3    # resets the streaming budget without repaying warm-up
 ACTION_STOP = 4
 
-# Response payload (both types, as far as tested) = [type, errCode, value, ...]
-# → data[1]=type, data[2]=errCode, data[3]=value. value=0 while warming up.
-#
-# IMPORTANT (spot mode): send `start` ONCE, then just keep listening — do NOT
-# re-send it after getting a value. The ring keeps refreshing the measurement
-# on its own (confirmed: repeated distinct BPM values arrive over many
-# seconds once locked). Re-sending `start` resets the ring's internal
-# warm-up/sample-tick counter, throwing away an active stream — only do it if
-# the ring has gone fully silent (no packets at all, valid or not) for
-# STALL_TIMEOUT seconds, which means the measurement actually ended/lost
-# contact.
-STALL_TIMEOUT = 8.0
+# realtime_reading_report_type6 force-stops ~40s after (re)start: 10s warm-up
+# + 30s streaming. Resending action=3 before that resets the 30s streaming
+# budget in place, as long as we're already past the initial ~10s warm-up
+# window. 25s gives a comfortable margin on both sides.
+KEEPALIVE_INTERVAL = 25.0
 POLL_INTERVAL = 1.0
-REALTIME_CONTINUE_PERIOD = 2.0  # how often to send ACTION_CONTINUE in --realtime mode
 
 
 def make_packet(cmd: int, payload: bytes = b"") -> bytes:
@@ -92,14 +78,12 @@ def log(msg: str) -> None:
 
 class HeartRateStream:
     """Runs the BLE connection on a background thread; the main thread only
-    ever reads `times`/`values` under `lock` to drive the matplotlib redraw."""
+    ever reads the deques under `lock` to drive the matplotlib redraw."""
 
-    def __init__(self, address: str, realtime: bool = False, max_points: int = 600):
+    def __init__(self, address: str, max_points: int = 2000):
         self.address = address
-        self.realtime = realtime
-        self.type_byte = TYPE_HR_REALTIME if realtime else TYPE_HR_SPOT
-        self.times = deque(maxlen=max_points)
-        self.values = deque(maxlen=max_points)
+        self.bpm_times = deque(maxlen=max_points)
+        self.bpm_values = deque(maxlen=max_points)
         self.lock = threading.Lock()
         self.start_time = None
         self.stop_event = threading.Event()
@@ -116,18 +100,26 @@ class HeartRateStream:
             return
         self.last_packet_time = time.monotonic()
         cmd = data[0] & 0x7F
-        if cmd == CMD_START:
-            rsp_type, err_code, value = data[1], data[2], data[3]
-            log(f"   cmd=0x{cmd:02x} type={rsp_type} errCode={err_code} value={value}")
-            if rsp_type == self.type_byte and value:
-                self.last_value = value
-                self.status = "measuring (locked)"
-                t = time.monotonic() - self.start_time
-                with self.lock:
-                    self.times.append(t)
-                    self.values.append(value)
-        else:
+        if cmd != CMD_START:
             log(f"   cmd=0x{cmd:02x} (unhandled)")
+            return
+
+        rsp_type, err_code, value = data[1], data[2], data[3]
+        log(f"   cmd=0x{cmd:02x} type={rsp_type} errCode={err_code} value={value}")
+        if rsp_type != TYPE_REALTIME:
+            return
+
+        if value:
+            t = time.monotonic() - self.start_time
+            with self.lock:
+                if self.bpm_times and t <= self.bpm_times[-1]:
+                    t = self.bpm_times[-1] + 1e-6
+                self.bpm_times.append(t)
+                self.bpm_values.append(value)
+            self.last_value = value
+            self.status = "streaming"
+        else:
+            self.status = "measuring (warming up)"
 
     async def _send(self, client, pkt, label):
         log(f"-> {pkt.hex()}   [{label}]")
@@ -142,36 +134,26 @@ class HeartRateStream:
             await client.start_notify(NOTIFY_CHAR, self.on_notify)
 
             self.start_time = time.monotonic()
-            sub_byte = ACTION_START if self.realtime else 0
-            start_pkt = make_packet(CMD_START, bytes([self.type_byte, sub_byte]))
-            continue_pkt = make_packet(CMD_START, bytes([self.type_byte, ACTION_CONTINUE]))
+            start_pkt = make_packet(CMD_START, bytes([TYPE_REALTIME, ACTION_START]))
+            continue_pkt = make_packet(CMD_START, bytes([TYPE_REALTIME, ACTION_CONTINUE]))
 
             try:
                 self.status = "measuring (warming up)"
                 self.last_packet_time = time.monotonic()
-                last_continue = time.monotonic()
-                await self._send(client, start_pkt,
-                                  "start HR measurement" + (" (realtime, EXPERIMENTAL)" if self.realtime else ""))
+                await self._send(client, start_pkt, "start realtime measurement")
+                last_keepalive = time.monotonic()
 
                 while not self.stop_event.is_set():
                     await asyncio.sleep(POLL_INTERVAL)
                     now = time.monotonic()
-                    if now - self.last_packet_time > STALL_TIMEOUT:
-                        self.status = "stalled, restarting measurement"
-                        await self._send(client, start_pkt, "restart HR measurement (stalled)")
-                        self.last_packet_time = now
-                        last_continue = now
-                    elif self.realtime and now - last_continue > REALTIME_CONTINUE_PERIOD:
-                        await self._send(client, continue_pkt, "continue realtime HR")
-                        last_continue = now
+                    if now - last_keepalive > KEEPALIVE_INTERVAL:
+                        await self._send(client, continue_pkt, "keep-alive (continue)")
+                        last_keepalive = now
             finally:
                 self.status = "stopping"
                 try:
-                    if self.realtime:
-                        stop_pkt = make_packet(CMD_START, bytes([self.type_byte, ACTION_STOP]))
-                    else:
-                        stop_pkt = make_packet(CMD_STOP, bytes([self.type_byte, self.last_value & 0xFF, 0]))
-                    await self._send(client, stop_pkt, "stop HR reading")
+                    stop_pkt = make_packet(CMD_START, bytes([TYPE_REALTIME, ACTION_STOP]))
+                    await self._send(client, stop_pkt, "stop realtime measurement")
                 except Exception:
                     pass
 
@@ -208,11 +190,13 @@ async def scan():
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Live heart-rate chart from a Colmi ring")
+    ap = argparse.ArgumentParser(description="Live heart-rate chart from a Colmi ring (continuous mode)")
     ap.add_argument("--address", help="ring BLE address")
     ap.add_argument("--scan", action="store_true", help="scan for nearby rings")
     ap.add_argument("--window", type=float, default=60.0,
                      help="seconds of history visible on screen (default 60)")
+    ap.add_argument("--min-bpm", type=float, default=40.0, help="chart y-axis lower bound (default 40)")
+    ap.add_argument("--max-bpm", type=float, default=180.0, help="chart y-axis upper bound (default 180)")
     args = ap.parse_args()
 
     if args.scan:
@@ -224,44 +208,45 @@ def main():
     stream = HeartRateStream(args.address)
     stream.start()
 
-    LIGHT_LINE, DARK_LINE = "#e34948", "#e66767"
+    LIGHT_BPM, DARK_BPM = "#e34948", "#e66767"
     is_dark = plt.rcParams["figure.facecolor"] in ("black", "#000000") or \
         str(plt.rcParams.get("axes.facecolor", "")).lower() in ("black", "#000000")
-    line_color = DARK_LINE if is_dark else LIGHT_LINE
+    bpm_color = DARK_BPM if is_dark else LIGHT_BPM
 
     fig, ax = plt.subplots(figsize=(9, 5))
-    line, = ax.plot([], [], "-o", markersize=4, linewidth=2, color=line_color)
-    value_text = ax.text(0.98, 0.95, "", transform=ax.transAxes,
-                          ha="right", va="top", fontsize=28, color=line_color)
-    status_text = ax.text(0.02, 0.02, "", transform=ax.transAxes,
+    bpm_line, = ax.plot([], [], "-o", linewidth=2, markersize=4, color=bpm_color, label="heart rate")
+    bpm_text = ax.text(0.98, 0.92, "", transform=ax.transAxes,
+                        ha="right", va="top", fontsize=26, color=bpm_color)
+    status_text = ax.text(0.02, 0.04, "", transform=ax.transAxes,
                            ha="left", va="bottom", fontsize=9, color="0.5")
-
     ax.set_xlabel("time (s)")
     ax.set_ylabel("heart rate (bpm)")
-    ax.set_title("Colmi live heart rate")
+    ax.set_ylim(args.min_bpm, args.max_bpm)
+    ax.set_title("Colmi R11CR — continuous heart rate (reading_type=6)")
     ax.grid(True, alpha=0.25)
+    ax.legend(loc="upper left", fontsize=8)
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
 
     def update(_frame):
         with stream.lock:
-            xs = list(stream.times)
-            ys = list(stream.values)
-        status_text.set_text(f"status: {stream.status}   samples: {len(ys)}")
-        if not xs:
-            return line, value_text, status_text
+            t = list(stream.bpm_times)
+            v = list(stream.bpm_values)
 
-        line.set_data(xs, ys)
-        value_text.set_text(f"{ys[-1]} bpm")
+        status_text.set_text(f"status: {stream.status}   samples: {len(t)}")
+        if not t:
+            return bpm_line, bpm_text, status_text
 
-        right = max(xs[-1], args.window)
-        ax.set_xlim(max(0, right - args.window), right)
-        ymin, ymax = min(ys), max(ys)
-        pad = max(5, (ymax - ymin) * 0.25)
-        ax.set_ylim(ymin - pad, ymax + pad)
-        return line, value_text, status_text
+        right = t[-1]
+        left = max(0.0, right - args.window)
+        vis_idx = [i for i, tt in enumerate(t) if tt >= left]
+        bpm_line.set_data([t[i] for i in vis_idx], [v[i] for i in vis_idx])
+        ax.set_xlim(left, max(right, args.window))
+        bpm_text.set_text(f"{v[-1]:.0f} bpm")
 
-    ani = animation.FuncAnimation(fig, update, interval=1000, cache_frame_data=False)
+        return bpm_line, bpm_text, status_text
+
+    ani = animation.FuncAnimation(fig, update, interval=500, cache_frame_data=False)
     try:
         plt.show()
     finally:
