@@ -93,14 +93,15 @@ class CsvLogger:
     def __init__(self, path: str):
         self.file = open(path, "w", newline="")
         self.writer = csv.writer(self.file)
-        self.writer.writerow(["time_iso", "elapsed_s", "channel", "reading_type", "value"])
+        self.writer.writerow(["time_iso", "elapsed_s", "channel", "reading_type", "value", "battery"])
         self.lock = threading.Lock()
 
-    def write(self, elapsed_s: float, channel: str, reading_type: int, value: int):
+    def write(self, elapsed_s: float, channel: str, reading_type, value, battery):
         with self.lock:
             self.writer.writerow([
                 datetime.now().isoformat(timespec="milliseconds"),
                 f"{elapsed_s:.3f}", channel, reading_type, value,
+                battery if battery is not None else "",
             ])
             self.file.flush()
 
@@ -148,6 +149,9 @@ class ChannelStream:
             with self.lock:
                 self.battery = data[1]
             log(self.name, f"   battery={data[1]}%")
+            if self.csv_logger:
+                self.csv_logger.write(time.monotonic() - self.start_time, self.name,
+                                       "battery", "", data[1])
             return
         if cmd != CMD_START:
             log(self.name, f"   cmd=0x{cmd:02x} (unhandled)")
@@ -166,7 +170,7 @@ class ChannelStream:
                 self.times.append(t)
                 self.values.append(value)
             if self.csv_logger:
-                self.csv_logger.write(t, self.name, self.reading_type, value)
+                self.csv_logger.write(t, self.name, self.reading_type, value, self.battery)
             self.status = "streaming"
         else:
             self.status = "measuring (warming up)"
