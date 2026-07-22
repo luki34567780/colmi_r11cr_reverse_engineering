@@ -28,15 +28,32 @@ intermediate value of the vendor's own HR algorithm, not real sensor data, so
 that whole approach has been dropped. This version just plots the rings' own
 officially-computed values.)
 
+Each ring's connection is supervised independently: if the BLE link drops,
+or if we go more than STALL_TIMEOUT seconds without receiving even a single
+matching-reading_type packet (a zero-value "still warming up" packet counts
+— only true silence counts as a stall), the connection is torn down and
+re-established from scratch (fresh connect + start, paying the warm-up
+penalty again).
+
+Optional: --hr-phy/--spo2-phy can request a switch to LE Coded PHY (BLE 5
+long-range mode, S=2 "500kbps"/S=8 "125kbps" coding) on that connection.
+This is a link-layer property outside GATT/bleak's scope, so it's done via
+a raw HCI command (`hcitool cmd`, same tool already used to shorten the
+connection interval) rather than through bleak. Needs root/cap_net_raw for
+hcitool's raw HCI socket, and whether it actually takes effect depends on
+both controllers agreeing to it — unconfirmed against real hardware yet.
+
 Usage:
     python colmi_heart_rate_live.py --scan
     python colmi_heart_rate_live.py --hr-address XX:XX:XX:XX:XX:XX --spo2-address YY:YY:YY:YY:YY:YY
     python colmi_heart_rate_live.py --hr-address XX:XX:XX:XX:XX:XX --spo2-address YY:YY:YY:YY:YY:YY --window 60
+    python colmi_heart_rate_live.py --hr-address XX:XX:XX:XX:XX:XX --hr-phy coded-s8
 """
 
 import argparse
 import asyncio
 import csv
+import re
 import sys
 import threading
 import time
@@ -69,6 +86,14 @@ KEEPALIVE_INTERVAL = 25.0
 POLL_INTERVAL = 1.0
 BATTERY_POLL_INTERVAL = 60.0
 
+# If we go this long without even a single matching-reading_type packet
+# (zero-value "warming up" packets count as received — only true silence
+# counts), or the BLE link itself drops, tear down and reconnect from
+# scratch. Normal operation sends a packet every ~500ms, so 10s is already
+# a generous margin above any expected jitter.
+STALL_TIMEOUT = 10.0
+RECONNECT_DELAY = 3.0
+
 
 def make_packet(cmd: int, payload: bytes = b"") -> bytes:
     pkt = bytearray(16)
@@ -80,6 +105,68 @@ def make_packet(cmd: int, payload: bytes = b"") -> bytes:
 
 def verify_checksum(data: bytes) -> bool:
     return len(data) == 16 and data[15] == (sum(data[:15]) & 0xFF)
+
+
+async def _run_hcitool(args, name: str, label: str):
+    """Run an hcitool subcommand, returning combined stdout+stderr text (or
+    None on failure). Requires raw HCI socket access (root/cap_net_raw) —
+    logs and returns rather than tearing down the BLE connection on error."""
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            "hcitool", *args,
+            stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
+        )
+        out, _ = await proc.communicate()
+        text = out.decode(errors="replace").strip()
+        if proc.returncode != 0:
+            log(name, f"{label} failed (rc={proc.returncode}): {text}")
+            return None
+        return text
+    except FileNotFoundError:
+        log(name, f"{label} failed: hcitool not found")
+        return None
+
+
+async def _get_hci_handle(address: str, name: str):
+    """Look up the kernel's connection handle for an already-connected
+    device by matching its address in `hcitool con` output."""
+    text = await _run_hcitool(["con"], name, "hcitool con")
+    if not text:
+        return None
+    for line in text.splitlines():
+        if address.lower() in line.lower():
+            m = re.search(r"handle\s+(\d+)", line)
+            if m:
+                return int(m.group(1))
+    return None
+
+
+async def request_coded_phy(address: str, s: int, name: str) -> None:
+    """Ask the controller to switch this connection's link layer to LE
+    Coded PHY (BLE 5 long-range mode), preferring S=2 (500kbps) or S=8
+    (125kbps) coding. PHY selection is a link-layer property outside
+    GATT/bleak's scope, so this goes straight to the controller via a raw
+    HCI command (Core spec Vol 4 Part E 7.8.49 "LE Set PHY") on the
+    already-open connection — the same mechanism already used manually to
+    shorten the connection interval via hcitool. Whether it actually takes
+    effect depends on the peer (the ring's RTL8762C) accepting the
+    resulting LL_PHY_UPDATE_REQ — not confirmed against real hardware yet."""
+    handle = await _get_hci_handle(address, name)
+    if handle is None:
+        log(name, "PHY request skipped: no active HCI connection handle found "
+                   "(needs root — try `sudo setcap cap_net_raw+eip $(which hcitool)`)")
+        return
+    lo, hi = handle & 0xFF, (handle >> 8) & 0xFF
+    phy_option = 1 if s == 2 else 2   # PHY_Options: 1=prefer S=2, 2=prefer S=8
+    all_phys = 0x00                   # we DO have a preference for both TX and RX
+    coded_phy_mask = 0x04             # TX/RX_PHYs bit2 = LE Coded PHY
+    args = ["cmd", "0x08", "0x31",                       # HCI LE Set PHY (OGF 0x08, OCF 0x31)
+            f"0x{lo:02x}", f"0x{hi:02x}",                 # Connection_Handle (LE)
+            f"0x{all_phys:02x}",                          # All_PHYs
+            f"0x{coded_phy_mask:02x}", f"0x{coded_phy_mask:02x}",  # TX_PHYs, RX_PHYs
+            f"0x{phy_option:02x}", "0x00"]                # PHY_Options (LE)
+    log(name, f"requesting Coded PHY S={s} on handle {handle}: hcitool {' '.join(args)}")
+    await _run_hcitool(args, name, "hcitool cmd (LE Set PHY)")
 
 
 def log(tag: str, msg: str) -> None:
@@ -115,15 +202,18 @@ class ChannelStream:
     thread. The main thread only ever reads `times`/`values` under `lock`."""
 
     def __init__(self, name: str, reading_type: int, address: str, start_time: float,
-                 csv_logger: "CsvLogger | None" = None, max_points: int = 2000):
+                 csv_logger: "CsvLogger | None" = None, coded_phy: int | None = None,
+                 max_points: int = 2000):
         self.name = name
         self.reading_type = reading_type
         self.address = address
         self.start_time = start_time
         self.csv_logger = csv_logger
+        self.coded_phy = coded_phy  # None, 2 (S=2), or 8 (S=8)
         self.times = deque(maxlen=max_points)
         self.values = deque(maxlen=max_points)
         self.battery = None
+        self.last_packet_time = time.monotonic()
         self.lock = threading.Lock()
         self.stop_event = threading.Event()
         self.status = "connecting"
@@ -161,6 +251,7 @@ class ChannelStream:
         log(self.name, f"   cmd=0x{cmd:02x} type={rsp_type} errCode={err_code} value={value}")
         if rsp_type != self.reading_type:
             return
+        self.last_packet_time = time.monotonic()  # zero-value packets count too — only true silence is a stall
 
         if value:
             t = time.monotonic() - self.start_time
@@ -179,7 +270,7 @@ class ChannelStream:
         log(self.name, f"-> {pkt.hex()}   [{label}]")
         await client.write_gatt_char(WRITE_CHAR, pkt)
 
-    async def _run(self):
+    async def _connect_and_stream(self):
         self.status = "connecting"
         log(self.name, f"connecting to {self.address} ...")
         async with BleakClient(self.address, timeout=20.0) as client:
@@ -187,8 +278,12 @@ class ChannelStream:
             log(self.name, "connected")
             await client.start_notify(NOTIFY_CHAR, self.on_notify)
 
+            if self.coded_phy:
+                await request_coded_phy(self.address, self.coded_phy, self.name)
+
             try:
                 self.status = "measuring (warming up)"
+                self.last_packet_time = time.monotonic()
                 await self._send(client, self._start_pkt(), f"start {self.name} measurement")
                 last_keepalive = time.monotonic()
                 await self._send(client, make_packet(CMD_BATTERY), "battery query")
@@ -196,7 +291,11 @@ class ChannelStream:
 
                 while not self.stop_event.is_set():
                     await asyncio.sleep(POLL_INTERVAL)
+                    if not client.is_connected:
+                        raise ConnectionError("BLE link dropped")
                     now = time.monotonic()
+                    if now - self.last_packet_time > STALL_TIMEOUT:
+                        raise TimeoutError(f"no {self.name} packet for over {STALL_TIMEOUT:.0f}s")
                     if now - last_keepalive > KEEPALIVE_INTERVAL:
                         await self._send(client, self._continue_pkt(), "keep-alive (continue)")
                         last_keepalive = now
@@ -209,6 +308,18 @@ class ChannelStream:
                     await self._send(client, self._stop_pkt(), f"stop {self.name} measurement")
                 except Exception:
                     pass
+
+    async def _run(self):
+        while not self.stop_event.is_set():
+            try:
+                await self._connect_and_stream()
+            except Exception as e:
+                log(self.name, f"connection error: {e!r}")
+            if self.stop_event.is_set():
+                break
+            self.status = f"reconnecting in {RECONNECT_DELAY:.0f}s"
+            log(self.name, self.status)
+            await asyncio.sleep(RECONNECT_DELAY)
 
     def _thread_main(self):
         loop = asyncio.new_event_loop()
@@ -232,15 +343,8 @@ class ChannelStream:
 async def scan():
     print("Scanning for rings (10s)...")
     devices = await BleakScanner.discover(timeout=10.0)
-    rings = [d for d in devices if (d.name or "").upper().startswith(
-        ("R02", "R03", "R06", "R09", "R10", "R11", "R12", "COLMI", "HELLO RING", "RING1"))]
-    if not rings:
-        print("No rings found. Make sure they're charged and not connected in the QRing app.")
-        return
-    for d in rings:
-        print(f"  {d.name or 'unknown':<20s} {d.address}  {d.rssi} dBm")
-    if len(rings) >= 2:
-        print(f"\nRun with:  python {sys.argv[0]} --hr-address {rings[0].address} --spo2-address {rings[1].address}")
+    for d in devices:
+        print(f"  {d.name or 'unknown':<20s} {d.address}")
 
 
 def main():
@@ -255,6 +359,10 @@ def main():
     ap.add_argument("--min-spo2", type=float, default=80.0, help="SpO2 y-axis lower bound (default 80)")
     ap.add_argument("--max-spo2", type=float, default=100.0, help="SpO2 y-axis upper bound (default 100)")
     ap.add_argument("--csv", help="log every reading to this CSV file (time_iso,elapsed_s,channel,reading_type,value)")
+    ap.add_argument("--hr-phy", choices=["1m", "coded-s2", "coded-s8"], default="1m",
+                     help="request a PHY switch on the HR connection (default 1m = no change, needs root)")
+    ap.add_argument("--spo2-phy", choices=["1m", "coded-s2", "coded-s8"], default="1m",
+                     help="request a PHY switch on the SpO2 connection (default 1m = no change, needs root)")
     args = ap.parse_args()
 
     if args.scan:
@@ -267,9 +375,12 @@ def main():
     if csv_logger:
         log("csv", f"logging to {args.csv}")
 
+    phy_s = {"coded-s2": 2, "coded-s8": 8}
     start_time = time.monotonic()
-    hr_stream = ChannelStream("heart rate", TYPE_HR, args.hr_address, start_time, csv_logger) if args.hr_address else None
-    spo2_stream = ChannelStream("SpO2", TYPE_SPO2, args.spo2_address, start_time, csv_logger) if args.spo2_address else None
+    hr_stream = ChannelStream("heart rate", TYPE_HR, args.hr_address, start_time, csv_logger,
+                               phy_s.get(args.hr_phy)) if args.hr_address else None
+    spo2_stream = ChannelStream("SpO2", TYPE_SPO2, args.spo2_address, start_time, csv_logger,
+                                 phy_s.get(args.spo2_phy)) if args.spo2_address else None
     for s in (hr_stream, spo2_stream):
         if s is not None:
             s.start()
